@@ -6,26 +6,26 @@ class TrackerManagementActionsController < ApplicationController
 		@projects = Project.select(:id,:name)
 	end
 
-	def show
-		# @projects = Project.select(:id,:name)
-	end
+	# def show
+	# 	# @projects = Project.select(:id,:name)
+	# end
 
-	def new
-		@projects = Project.select(:id,:name)
-		@tracker_action = TrackerManagementAction.new()
-	end
+	# def new
+	# 	@projects = Project.select(:id,:name)
+	# 	@tracker_action = TrackerManagementAction.new()
+	# end
 
-	def create
-		@projects = Project.select(:id,:name)
-		@tracker_action = TrackerManagementAction.new(tracker_action_params)
-		if @tracker_action.save
-			flash[:success] = "Action created successfuly!!"
-			redirect_to tracker_actions_path
-		else
-			@tracker_action.errors.full_messages.each{|a| flash[:errors] = a} 
-			render :new
-		end	
-	end
+	# def create
+	# 	@projects = Project.select(:id,:name)
+	# 	@tracker_action = TrackerManagementAction.new(tracker_action_params)
+	# 	if @tracker_action.save
+	# 		flash[:success] = "Action created successfuly!!"
+	# 		redirect_to tracker_actions_path
+	# 	else
+	# 		@tracker_action.errors.full_messages.each{|a| flash[:errors] = a} 
+	# 		render :new
+	# 	end	
+	# end
 
 	def create_trecker
 		@projects = Project.select(:id,:name)
