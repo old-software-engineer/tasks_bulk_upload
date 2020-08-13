@@ -1,0 +1,107 @@
+.inline-flex{
+	display: inline-flex;
+}
+
+.col-main-section {
+	width: 100%
+}
+
+.col-left-section {
+	width: 20%;
+	padding: 0px 40px 0px 0px;
+}
+
+.col-right-section {
+	width: 70%;
+	padding: 0px 0px 0px 15px;
+	border-left: 3px solid #8080803d;
+}
+
+.tracker-action-form input,select{
+	width: 95%;
+	margin: 10px 0px;
+}
+
+.tracker-action-form input{
+	height: 8%
+}
+
+.tracker-action-form label{
+	font-size: medium;
+}
+
+@media screen and (max-width: 992px) {
+	.col-left-section {
+	  width: 100%;
+	}
+	.col-right-section {
+	  width: 100%;
+	}
+	.tracker-action-table{
+		overflow-x: scroll; 
+	}
+}
+
+.col-left-section ul {
+	list-style-type: none;
+}
+
+.col-left-section ul li {
+	margin: 10px 0px;
+	padding: 5px 15px 5px 0px;
+	border-bottom: 1px solid #ff00005e;
+}
+
+.col-left-section ul li a{
+	padding: 0px 10px;
+}
+
+.container-fluid {
+	width: 100%;
+	padding-right: 15px;
+	padding-left: 15px;
+	margin-right: auto;
+	margin-left: auto
+}
+
+.row {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-ms-flex-wrap: wrap;
+	flex-wrap: wrap;
+	margin-right: -15px;
+	margin-left: -15px
+}
+
+.tracker-active{
+	background-color: #7d787861;
+	box-shadow: 2px 5px 5px 1px #628db6;
+}
+
+.data_missing{
+	float: right;
+	padding: 0px 5% 0px 1%;
+}
+.missing_column{
+	float: left;
+	margin-right: 25%;
+	padding: 0px 5% 0px 1%;
+}
+
+div.flash.error, .errorExplanation {
+    background-color: #ffe3e3;
+    border-color: #d88;
+    color: #880000;
+}
+
+.errorExplanation ul {
+    background: url(../images/exclamation.png) 8px 50% no-repeat;
+    background-color: rgba(0, 0, 0, 0);
+    font-size: 0.9em;
+    padding-top: 5px;
+	padding-bottom: 5px;
+}
+.errorExplanation {
+    color: #880000;
+}

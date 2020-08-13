@@ -1,0 +1,81 @@
+<% content_for :header_tags do %>
+<%= stylesheet_link_tag 'tracker_action', plugin: 'tracker_management' %>
+<%= javascript_include_tag 'tracker_action', plugin: 'tracker_management' %>
+<% end %>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-main-section">
+            <div class="row">
+                <div class="col-left-section">
+                    <ul>
+                        <li>
+                            <%= link_to 'Define Action',tracker_action_path %>
+                        </li>
+                        <li>
+                            <%= link_to 'Bulk Upload',tracker_actions_path %>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-right-section tracker-action-table">
+                    <%if @errors.present? && @errors[:message].present? %>
+                      <div id="errorExplanation"><ul>
+                        <%@errors[:message].each do |msg|%>
+                          <li><%= msg %></li>
+                        <%end%>
+                      </ul></div>
+                    <%end%>
+                    <form class="tracker-action-form" action="<%= create_csvfile_tracker_path%>" method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token%>">
+                        <h2>Tracker Actions</h2>
+                        <!-- <label for="tracker_action_name">Action Name</label> -->
+                        <label for="tracker_action_project"> Select Project</label>
+                        <select id="tracker_action_project" name="tracker_action[project_id]" data-selected-option="<%=params[:tracker_action][:project_id] if params[:tracker_action].present? %>" data-type="project" required="true">
+                            <option value="" disabled selected>Please select project</option>
+                            <% @projects.each do |project| %>
+                              <option value="<%= project.id %>"><%= project.try(:name) %></option>
+                            <% end %>
+                        </select>
+                        </br>
+                        <label for="tracker_action_tracker">Select Tracker</label>
+                        <select id="tracker_action_tracker" data-type="tracker" data-selected-option="<%= params[:tracker_action][:tracker_id] if params[:tracker_action] %>" name="tracker_action[tracker_id]" required="true">
+                            <option value="" disabled selected>Please select tracker</option>
+                        </select>
+                        </br>
+                        <label for="parent_tracker_task">Select Parent task</label>
+                        <input id="parent_tracker_task" data-type="parent-tracker-task">
+                        <input id="parent-task-value" type="hidden" name="tracker_action[parent_id]">
+                            
+                        </br>
+                        <label for="tracker_csv_file">Select Excel/Csv File</label>
+                        <input id="tracker_csv_file" type="file" name="tracker_action[file]" data-type="csv_file" >
+                        </br>
+                        <dir class="row">
+                          <%if @errors.present? && !@errors[:column_missing].blank?%>
+                            <div class="errorExplanation missing_column">
+                              <%@errors[:column_missing].each do |msg|%>
+                                <ul>
+                                  <li><%= msg %> </li>
+                                </ul>
+                              <%end%>
+                            </div>
+                          <%end%>
+                          <%if @errors.present? && !@errors[:data_missing].blank?%>
+                            <div class="errorExplanation data_missing">
+                              <%@errors[:data_missing].each do |msg|%>
+                                <ul>
+                                  <li><%= msg %> </li>
+                                </ul>
+                              <%end%>
+                            </div>
+                          <%end%>
+                        </dir>
+                          </br>
+                        <div class="inline-flex">
+                            <button class="btn"> Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
