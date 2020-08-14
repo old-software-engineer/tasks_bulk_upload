@@ -29,9 +29,9 @@
                 // code block
         }
         if (options.length && type != 'tracker_tasks') {
-          options_for_tracker(_this, options)
+            options_for_tracker(_this, options)
         } else {
-            // alert("No option Found")
+            $('option', _this).not(':disabled').remove();
         }
     }
 
@@ -68,11 +68,14 @@
       var availableTags = JSON.parse($('[data-type="parent-tracker-task"]').attr('data-options'))
         $('[data-type="parent-tracker-task"]').autocomplete({
           source: availableTags,
+          minLength: 0,
            select: function( event, ui ) {
               $( "#parent_tracker_task" ).val( ui.item.label );
               $( "#parent-task-value" ).val( ui.item.value );
               return false;
             }
+        }).focus(function() {
+            $(this).autocomplete("search", $(this).val());
         });
     })
 
