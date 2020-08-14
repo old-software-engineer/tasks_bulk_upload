@@ -1,4 +1,4 @@
-  $(document).ready("turbolinks:load",function() {
+  $(document).ready(function() {
     var project_ids = null
 
     function options_for_tracker(_this, options) {
