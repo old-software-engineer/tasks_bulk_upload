@@ -1,4 +1,3 @@
-(function($) {
   $(document).on("ready turbolinks:load",function() {
     var project_ids = null
 
@@ -89,4 +88,3 @@
     })
 
   })
-})(jQuery);
