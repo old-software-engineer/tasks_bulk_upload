@@ -39,10 +39,10 @@ class TrackerManagementActionsController < ApplicationController
 			csv_text = File.read(params[:tracker_action][:file].path)
 			csv = CSV.parse(csv_text, :headers => true, :header_converters=> lambda {|f| f.downcase.strip})
 			custom_field_required = @tracker.custom_fields.blank? ? [] : @tracker.custom_fields.map{|a| a.name if a.is_required}
-			custom_field_names = @tracker.custom_fields.map(&:name)
+			custom_field_names = @tracker.custom_fields.reject(&:blank?).map(&:name)
 
 			# checking all required fields for creating issues
-			(["subject", "status","priority",'author'] + custom_field_required).each{|name| @errors[:column_missing].push("required field #{name} is missing into CSV file") unless csv.headers.include?(name) }
+			(["subject", "status","priority",'author'] + custom_field_required.reject(&:blank?)).each{|name| @errors[:column_missing].push("required field #{name} is missing into CSV file") unless csv.headers.include?(name.downcase.strip()) }
 			unless @errors[:column_missing].blank?
 				render :index
 				return
@@ -113,14 +113,14 @@ class TrackerManagementActionsController < ApplicationController
 			case params[:type]
 			when "tracker"
 				data_options = Tracker.joins(:projects).where(projects: {id: params[:project_ids]}).select(:id,:name).group(:id,:name)
-				data_options = data_options.having("count(*) > 1") if params[:project_ids].size > 1
+				# data_options = data_options.having("count(*) > 1") if params[:project_ids].size > 1
 
 			when "custom_field"
 				data_options = IssueCustomField.joins(:trackers).where(trackers: {id: params[:tracker_ids]}).select(:id,:name).group(:id,:name)
-				data_options = data_options.having("count(*) > 1") if params[:tracker_ids].size > 1
+				# data_options = data_options.having("count(*) > 1") if params[:tracker_ids].size > 1
 			when "tracker_tasks"
 				data_options = Issue.joins(:tracker).where(tracker_id: params[:tracker_ids]).select(:id,:subject).group(:id,:subject)
-				data_options = data_options.having("count(*) > 1") if params[:tracker_ids].size > 1
+				# data_options = data_options.having("count(*) > 1") if params[:tracker_ids].size > 1
 				data_options = data_options.map{|a| {value: a.id, label: a.subject }}
 			end
 			render json: {options: data_options,type: params[:type]}
