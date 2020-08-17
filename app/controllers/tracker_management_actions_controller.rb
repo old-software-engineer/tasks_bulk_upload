@@ -51,7 +51,7 @@ class TrackerManagementActionsController < ApplicationController
 			custom_field_required = @tracker.custom_fields.blank? ? [] : @tracker.custom_fields.select(&:is_required).pluck(:name)
 			tracker_log.info("======> custom_field_required:  #{custom_field_required} <=========")
 			
-			custom_field_names = @tracker.custom_fields.select(&:is_required).pluck(:name).reject(&:blank?)
+			custom_field_names = @tracker.custom_fields.pluck(:name).reject(&:blank?)
 			tracker_log.info("======> custom_field_names:  #{custom_field_names} <=========")
 			# checking all required fields for creating issues
 			(["subject", "status","priority",'author'] + custom_field_required.reject(&:blank?)).each{|name| @errors[:column_missing].push("required field #{name} is missing into CSV file") unless csv.headers.include?(name.downcase.strip()) }
@@ -60,7 +60,11 @@ class TrackerManagementActionsController < ApplicationController
 				render :index
 				return
 			end
-
+			custom_fields_with_ids = {}
+			custom_field_names.each do |name|
+				custom_field = IssueCustomField.find_by_id(name) || IssueCustomField.find_by_name(name)
+				custom_fields_with_ids[name] = custom_field.id unless custom_field.nil?
+			end
 			data = []
 			csv.each_with_index do |row,index|
 				new_data = {}
@@ -104,9 +108,8 @@ class TrackerManagementActionsController < ApplicationController
 						new_data['tracker_id'] = @tracker.id if @tracker.present?
 						new_data['watcher_user_ids'] = watchers.map(&:id) if watchers.present?
 						new_data["custom_field_values"]= {}
-						custom_field_names.each do |name|
-							issue_custom_field = IssueCustomField.find_by_id(name) || IssueCustomField.find_by_name(name) 
-							new_data["custom_field_values"][issue_custom_field.id.to_s] = row[name.downcase.strip] unless row[name.downcase.strip].blank? || issue_custom_field.nil?
+						custom_fields_with_ids.each do |key,value|
+							new_data["custom_field_values"][value.to_s] = row[key.downcase.strip] unless row[key.downcase.strip].blank?
 						end
 
 						data.push(new_data)
