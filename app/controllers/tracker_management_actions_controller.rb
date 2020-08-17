@@ -73,7 +73,7 @@ class TrackerManagementActionsController < ApplicationController
 					priority = IssuePriority.find_by_id(row['priority']) || IssuePriority.find_by_name(row['priority'])
 					tracker_log.info("======> priority:  #{priority} <=========")
 
-					assignee = User.find_by_id(row['assignee']) || User.find_by_mail(row['assignee']) || User.find_by_firstname(row['assignee']) || User.find_by_login(row['assignee'])
+					assignee = User.find_by_id(row['assignee']) || User.find_by_mail(row['assignee']) || User.find_by_firstname(row['assignee']) || User.find_by_login(row['assignee']) || User.select{|a| a.name == row['assignee'] }
 					tracker_log.info("======> assignee:  #{assignee} <=========")
 
 					watchers = User.where(id: row['watcher']) || User.where(mail: row['watcher']) || User.where(firstname: row['watcher'])
@@ -82,7 +82,7 @@ class TrackerManagementActionsController < ApplicationController
 					category = IssueCategory.find_by_id(row['category']) || IssueCategory.find_by_name(row['category'])
 					tracker_log.info("======> category:  #{category} <=========")
 
-					author = User.find_by_id(row['author']) || User.find_by_mail(row['author']) || User.find_by_firstname(row['author'])  || User.find_by_login(row['author'])
+					author = User.find_by_id(row['author']) || User.find_by_mail(row['author']) || User.find_by_firstname(row['author'])  || User.find_by_login(row['author']) || User.select{|a| a.name == row['author'] }
 					tracker_log.info("======> author:  #{author} <=========")
 
 					if !priority.nil? && !issue_status.nil? && !author.nil?
@@ -115,7 +115,6 @@ class TrackerManagementActionsController < ApplicationController
 						@errors[:message].push("\#Row #{index + 2 } priority field value doesn't exist in database") if priority.nil?
 						@errors[:message].push("\#Row #{index + 2 } author field value doesn't exist in database") if author.nil?
 						@errors[:message].push("\#Row #{index + 2 } status field value doesn't exist in database") if issue_status.nil?
-						tracker_log.info("======> data Error Message:  #{@errors[:message]} <=========")
 					end
 				end
 			end
@@ -140,6 +139,7 @@ class TrackerManagementActionsController < ApplicationController
 					render :index
 				end
 			else
+				tracker_log.info("======> data Error Message:  #{@errors[:message]} <=========") unless @errors[:message].blank?
 				tracker_log.info("======> required field missing error:  #{@errors[:column_missing]} <=========")
 				@errors[:column_missing].push("required field #{name} is missing") if project_id.blank?
 				render :index
