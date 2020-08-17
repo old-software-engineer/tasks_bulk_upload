@@ -122,12 +122,15 @@ class TrackerManagementActionsController < ApplicationController
 				begin
 					tracker_log.info("======> data to create:  #{data} <=========")
 					@issues = Issue.create(data)
-					@issues_errors = @issues.map{|a| a.errors.full_messages}.flatten
-					if @issues_errors.blank?
+					@issues_errors = @issues.each_with_index do|a,i|
+						@index = (i + 2)
+						a.errors.full_messages.each{|msg|  "\#Row #{@index} value give error: #{msg}"}
+					end
+					if @issues_errors.flatten.blank?
 						tracker_log.info("======> data to created successfuly <=========")
 						redirect_to issue_path(@issues.first.id)
 					else
-						tracker_log.info("======> Error : #{@issues_errors} <=========")
+						tracker_log.info("======> Error : #{@issues_errors.flatten} <=========")
 						@issues_errors.each do |error|
 							@errors[:message].push("#{error}")
 						end
