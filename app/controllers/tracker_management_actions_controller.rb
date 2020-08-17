@@ -6,6 +6,10 @@ class TrackerManagementActionsController < ApplicationController
 		@projects = Project.select(:id,:name)
 	end
 
+	def tracker_log
+		@@tracker_log ||= Logger.new("#{Rails.root}/log/tracker_bulk_upload.log")
+	end
+
 	# def show
 	# 	# @projects = Project.select(:id,:name)
 	# end
@@ -30,20 +34,30 @@ class TrackerManagementActionsController < ApplicationController
 	def create_trecker
 		@projects = Project.select(:id,:name)
 		project_id = tracker_action_params['project_id']
+		tracker_log.info("======> project id:  #{project_id} <=========")
 		tracker_id = tracker_action_params['tracker_id']
+		tracker_log.info("======> tracker id:  #{tracker_id} <=========")
 		parent_id = tracker_action_params['parent_id']
+		tracker_log.info("======> Parent issue id:  #{parent_id} <=========")
 		@tracker = Tracker.find_by_id(tracker_id)
+		debugger
+		tracker_log.info("======> Tracker:  #{@tracker} <=========")
 
 		@errors = {message:[],column_missing:[],data_missing:[]}
 		if params[:tracker_action][:file].present? && !project_id.blank? && !@tracker.nil?
+			tracker_log.info("======> Inside the CSV file functionality <=========")
 			csv_text = File.read(params[:tracker_action][:file].path)
 			csv = CSV.parse(csv_text, :headers => true, :header_converters=> lambda {|f| f.downcase.strip})
+			
 			custom_field_required = @tracker.custom_fields.blank? ? [] : @tracker.custom_fields.map{|a| a.name if a.is_required}
+			tracker_log.info("======> custom_field_required:  #{custom_field_required} <=========")
+			
 			custom_field_names = @tracker.custom_fields.reject(&:blank?).map(&:name)
-
+			tracker_log.info("======> custom_field_names:  #{custom_field_names} <=========")
 			# checking all required fields for creating issues
 			(["subject", "status","priority",'author'] + custom_field_required.reject(&:blank?)).each{|name| @errors[:column_missing].push("required field #{name} is missing into CSV file") unless csv.headers.include?(name.downcase.strip()) }
 			unless @errors[:column_missing].blank?
+				tracker_log.info("======> missing columns error:  #{@errors[:column_missing]} <=========")
 				render :index
 				return
 			end
@@ -93,13 +107,26 @@ class TrackerManagementActionsController < ApplicationController
 			end
 			if @errors[:message].blank? && @errors[:column_missing].blank? && @errors[:data_missing].blank?
 				begin
-					Issue.create!(data)
-					redirect_to project_issues_path(project_id)
+					tracker_log.info("======> data to create:  #{data} <=========")
+					@issues = Issue.create(data)
+					@issues_errors = @issues.map{|a| a.errors.full_messages}.flatten
+					if @issues_errors.blank?
+						tracker_log.info("======> data to created successfuly <=========")
+						redirect_to issue_path(@issues.first.id)
+					else
+						tracker_log.info("======> Error : #{@issues_errors} <=========")
+						@issues_errors.each do |error|
+							@errors[:message].push("#{error}")
+						end
+						render :index
+					end
 				rescue Exception => e
+					tracker_log.info("======> error while creating recode:  #{e.message} <=========")
 					@errors[:message].push("#{e.message}")
 					render :index
 				end
 			else
+				tracker_log.info("======> required field missing error:  #{@errors[:column_missing]} <=========")
 				@errors[:column_missing].push("required field #{name} is missing") if project_id.blank?
 				render :index
 			end
