@@ -96,11 +96,14 @@ class TrackerManagementActionsController < ApplicationController
 							issue_custom_field = IssueCustomField.find_by_id(name) || IssueCustomField.find_by_name(name) 
 							new_data["custom_field_values"][issue_custom_field.id.to_s] = row[name] unless row[name].blank? || issue_custom_field.nil?
 						end
+
 						data.push(new_data)
+						tracker_log.info("======> new data of \#Row #{index + 2 }:  #{new_data} <=========")
 					else
 						@errors[:message].push("\#Row #{index + 2 } priority field value doesn't exist in database") if priority.nil?
 						@errors[:message].push("\#Row #{index + 2 } author field value doesn't exist in database") if priority.nil?
 						@errors[:message].push("\#Row #{index + 2 } status field value doesn't exist in database") if issue_status.nil?
+						tracker_log.info("======> data Error Messagw:  #{@errors[:message]} <=========")
 					end
 				end
 			end
