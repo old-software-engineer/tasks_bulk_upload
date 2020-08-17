@@ -125,18 +125,15 @@ class TrackerManagementActionsController < ApplicationController
 				begin
 					tracker_log.info("======> data to create:  #{data} <=========")
 					@issues = Issue.create(data)
-					@issues_errors = @issues.each_with_index do|a,i|
+					@issues.each_with_index do|a,i|
 						@index = (i + 2)
-						a.errors.full_messages.each{|msg|  "\#Row #{@index} value give error: #{msg}"}
+						a.errors.full_messages.each{|msg|  @errors[:message].push("\#Row #{@index} value give error: #{msg}") unless a.errors.full_messages.blank? }
 					end
-					if @issues_errors.flatten.blank?
+					if @errors[:message].blank?
 						tracker_log.info("======> data to created successfuly <=========")
 						redirect_to issue_path(@issues.first.id)
 					else
-						tracker_log.info("======> Error : #{@issues_errors.flatten} <=========")
-						@issues_errors.each do |error|
-							@errors[:message].push("#{error}")
-						end
+						tracker_log.info("======> Error : #{@errors[:message]} <=========")
 						render :index
 					end
 				rescue Exception => e
