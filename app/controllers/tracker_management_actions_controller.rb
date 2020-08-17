@@ -40,7 +40,6 @@ class TrackerManagementActionsController < ApplicationController
 		parent_id = tracker_action_params['parent_id']
 		tracker_log.info("======> Parent issue id:  #{parent_id} <=========")
 		@tracker = Tracker.find_by_id(tracker_id)
-		debugger
 		tracker_log.info("======> Tracker:  #{@tracker} <=========")
 
 		@errors = {message:[],column_missing:[],data_missing:[]}
