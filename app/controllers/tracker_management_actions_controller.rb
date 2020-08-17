@@ -73,7 +73,7 @@ class TrackerManagementActionsController < ApplicationController
 					priority = IssuePriority.find_by_id(row['priority']) || IssuePriority.find_by_name(row['priority'])
 					tracker_log.info("======> priority:  #{priority} <=========")
 
-					assignee = User.find_by_id(row['assignee']) || User.find_by_mail(row['assignee']) || User.find_by_firstname(row['assignee']) || User.find_by_login(row['assignee']) || User.select{|a| a.name == row['assignee'] }
+					assignee = User.find_by_id(row['assignee']) || User.find_by_mail(row['assignee']) || User.find_by_firstname(row['assignee']) || User.find_by_login(row['assignee']) || User.select{|a| a.name == row['assignee'] }.try(:first)
 					tracker_log.info("======> assignee:  #{assignee} <=========")
 
 					watchers = User.where(id: row['watcher']) || User.where(mail: row['watcher']) || User.where(firstname: row['watcher'])
@@ -82,7 +82,7 @@ class TrackerManagementActionsController < ApplicationController
 					category = IssueCategory.find_by_id(row['category']) || IssueCategory.find_by_name(row['category'])
 					tracker_log.info("======> category:  #{category} <=========")
 
-					author = User.find_by_id(row['author']) || User.find_by_mail(row['author']) || User.find_by_firstname(row['author'])  || User.find_by_login(row['author']) || User.select{|a| a.name == row['author'] }
+					author = User.find_by_id(row['author']) || User.find_by_mail(row['author']) || User.find_by_firstname(row['author'])  || User.find_by_login(row['author']) || User.select{|a| a.name == row['author'] }.try(:first)
 					tracker_log.info("======> author:  #{author} <=========")
 
 					if !priority.nil? && !issue_status.nil? && !author.nil?
