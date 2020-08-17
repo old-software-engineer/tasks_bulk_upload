@@ -68,11 +68,23 @@ class TrackerManagementActionsController < ApplicationController
 					@errors[:data_missing].push("\#Row #{index + 2 } has missing required field data")
 				else
 					issue_status = IssueStatus.find_by_id(row['status']) ||  IssueStatus.find_by_name(row['status'])
+					tracker_log.info("======> issue_status :  #{issue_status} <=========")
+
 					priority = IssuePriority.find_by_id(row['priority']) || IssuePriority.find_by_name(row['priority'])
-					assignee = User.find_by_id(row['assignee']) || User.find_by_mail(row['assignee']) || User.find_by_firstname(row['assignee'])
+					tracker_log.info("======> priority:  #{priority} <=========")
+
+					assignee = User.find_by_id(row['assignee']) || User.find_by_mail(row['assignee']) || User.find_by_firstname(row['assignee']) || User.find_by_login(row['assignee'])
+					tracker_log.info("======> assignee:  #{assignee} <=========")
+
 					watchers = User.where(id: row['watcher']) || User.where(mail: row['watcher']) || User.where(firstname: row['watcher'])
+					tracker_log.info("======> watchers:  #{watchers} <=========")
+
 					category = IssueCategory.find_by_id(row['category']) || IssueCategory.find_by_name(row['category'])
-					author = User.find_by_id(row['author']) || User.find_by_mail(row['author']) || User.find_by_firstname(row['author'])
+					tracker_log.info("======> category:  #{category} <=========")
+
+					author = User.find_by_id(row['author']) || User.find_by_mail(row['author']) || User.find_by_firstname(row['author'])  || User.find_by_login(row['author'])
+					tracker_log.info("======> author:  #{author} <=========")
+
 					if !priority.nil? && !issue_status.nil? && !author.nil?
 						new_data['subject'] = row['subject']
 						new_data['description'] = row['description']
@@ -101,9 +113,9 @@ class TrackerManagementActionsController < ApplicationController
 						tracker_log.info("======> new data of \#Row #{index + 2 }:  #{new_data} <=========")
 					else
 						@errors[:message].push("\#Row #{index + 2 } priority field value doesn't exist in database") if priority.nil?
-						@errors[:message].push("\#Row #{index + 2 } author field value doesn't exist in database") if priority.nil?
+						@errors[:message].push("\#Row #{index + 2 } author field value doesn't exist in database") if author.nil?
 						@errors[:message].push("\#Row #{index + 2 } status field value doesn't exist in database") if issue_status.nil?
-						tracker_log.info("======> data Error Messagw:  #{@errors[:message]} <=========")
+						tracker_log.info("======> data Error Message:  #{@errors[:message]} <=========")
 					end
 				end
 			end
