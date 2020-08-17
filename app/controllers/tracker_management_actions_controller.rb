@@ -124,21 +124,21 @@ class TrackerManagementActionsController < ApplicationController
 			if @errors[:message].blank? && @errors[:column_missing].blank? && @errors[:data_missing].blank?
 				begin
 					tracker_log.info("======> data to create:  #{data} <=========")
-					@issues = Issue.create(data)
-					@issues.each_with_index do|a,i|
-						@index = (i + 2)
-						a.errors.full_messages.each{|msg|  @errors[:message].push("\#Row #{@index} value give error: #{msg}") unless a.errors.full_messages.blank? }
-					end
-					if @errors[:message].blank?
-						tracker_log.info("======> data to created successfuly <=========")
-						redirect_to issue_path(@issues.first.id)
-					else
-						tracker_log.info("======> Error : #{@errors[:message]} <=========")
-						render :index
-					end
+					@issues = Issue.create!(data)
+					redirect_to issue_path(@issues.first.id) unless @issues.nil?
+					# @issues.each_with_index do|a,i|
+					# 	@index = (i + 2)
+					# 	a.errors.full_messages.each{|msg|  @errors[:message].push("\#Row #{@index} value give error: #{msg}") unless a.errors.full_messages.blank? }
+					# end
+					# if @errors[:message].blank?
+					# 	tracker_log.info("======> data to created successfuly <=========")
+					# else
+					# 	tracker_log.info("======> Error : #{@errors[:message]} <=========")
+					# 	render :index
+					# end
 				rescue Exception => e
-					tracker_log.info("======> error while creating recode:  #{e.message} <=========")
-					@errors[:message].push("#{e.message}")
+					tracker_log.info("======> This field value doesn't exist into Databse: #{e.message} <=========")
+					@errors[:message].push("This field value doesn't exist into Databse: #{e.message}")
 					render :index
 				end
 			else
