@@ -42,8 +42,14 @@ class TrackerManagementActionsController < ApplicationController
 		@tracker = Tracker.find_by_id(tracker_id)
 		tracker_log.info("======> Tracker:  #{@tracker} <=========")
 
+
 		@errors = {message:[],column_missing:[],data_missing:[]}
 		if params[:tracker_action][:file].present? && !project_id.blank? && !@tracker.nil?
+			@users = User.select(:id,:firstname,:lastname,:login)
+			@categories = IssueCategory.select(:id,:name)
+			@priorities = IssuePriority.select(:id,:name)
+			@issue_status = IssueStatus.select(:id,:name)
+
 			tracker_log.info("======> Inside the CSV file functionality <=========")
 			csv_text = File.read(params[:tracker_action][:file].path)
 			csv = CSV.parse(csv_text, :headers => true, :header_converters=> lambda {|f| f.downcase.strip})
@@ -71,22 +77,22 @@ class TrackerManagementActionsController < ApplicationController
 				if row['subject'].blank? || row['status'].blank? || row['priority'].blank?
 					@errors[:data_missing].push("\#Row #{index + 2 } has missing required field data")
 				else
-					issue_status = IssueStatus.find_by_id(row['status']) ||  IssueStatus.find_by_name(row['status'])
+					issue_status = @issue_status.detect{|x| x.id.to_s == row['status'].downcase.strip || x.name.downcase.strip == row['status'].downcase.strip}
 					tracker_log.info("======> issue_status :  #{issue_status} <=========")
 
-					priority = IssuePriority.find_by_id(row['priority']) || IssuePriority.find_by_name(row['priority'])
+					priority = @priorities.detect{|x| x.id.to_s == row['priority'].downcase.strip || x.name.downcase.strip == row['priority'].downcase.strip}
 					tracker_log.info("======> priority:  #{priority} <=========")
 
-					assignee = User.find_by_id(row['assignee']) || User.find_by_mail(row['assignee']) || User.find_by_firstname(row['assignee']) || User.find_by_login(row['assignee']) || User.select{|a| a.name == row['assignee'] }.try(:first)
+					assignee = @users.detect{|x| x.id.to_s == row['author'].downcase.strip || x.firstname.downcase.strip == row['author'].downcase.strip || x.lastname.downcase.strip == row['author'].downcase.strip || "#{x.firstname} #{x.lastname}".downcase.strip == row['author'].downcase.strip || x.login.downcase.strip == row['author'].downcase.strip}
 					tracker_log.info("======> assignee:  #{assignee} <=========")
 
 					watchers = User.where(id: row['watcher']) || User.where(mail: row['watcher']) || User.where(firstname: row['watcher']) || User.select{|a| row['watcher'].include?(a.name) }
 					tracker_log.info("======> watchers:  #{watchers} <=========")
 
-					category = IssueCategory.find_by_id(row['category']) || IssueCategory.find_by_name(row['category'])
+					category = @categories.detect{|x| x.id.to_s == row['category'].downcase.strip || x.name.downcase.strip == row['category'].downcase.strip} 
 					tracker_log.info("======> category:  #{category} <=========")
 
-					author = User.find_by_id(row['author']) || User.find_by_mail(row['author']) || User.find_by_firstname(row['author'])  || User.find_by_login(row['author']) || User.select{|a| a.name == row['author'] }.try(:first)
+					author = @users.detect{|x| x.id.to_s == row['author'].downcase.strip || x.firstname.downcase.strip == row['author'].downcase.strip || x.lastname.downcase.strip == row['author'].downcase.strip || "#{x.firstname} #{x.lastname}".downcase.strip == row['author'].downcase.strip || x.login.downcase.strip == row['author'].downcase.strip}
 					tracker_log.info("======> author:  #{author} <=========")
 
 					if !priority.nil? && !issue_status.nil? && !author.nil?
