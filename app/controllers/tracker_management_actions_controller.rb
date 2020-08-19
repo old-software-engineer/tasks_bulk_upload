@@ -124,6 +124,11 @@ class TrackerManagementActionsController < ApplicationController
 						new_data['watcher_user_ids'] = watchers.map(&:id) if watchers.present?
 						new_data["custom_field_values"]= {}
 						custom_fields_with_ids.each do |key,value|
+
+							tracker_log.info("======> custom field vales:  #{value} <=========")
+							
+							tracker_log.info("======> custom field default_options:  #{value['default_options'] if value['default_options'].present?} <=========")
+
 							input_value = value['default_options'].present? ?  value['default_options'].detect{|a| a.downcase.strip == row[key.downcase.strip] } : row[key.downcase.strip]
 
 							tracker_log.info("======> custom value:  #{input_value} <=========")
