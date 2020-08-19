@@ -69,10 +69,13 @@ class TrackerManagementActionsController < ApplicationController
 			custom_fields_with_ids = {}
 			
 			custom_field_names.each do |name|
+				tracker_log.info("======> custom_fields name:  #{name} <=========")
 				custom_field = IssueCustomField.find_by_id(name) || IssueCustomField.find_by_name(name)
 				custom_fields_with_ids[name]['id'] = custom_field.id unless custom_field.nil?
 				custom_fields_with_ids[name]['default_options'] = custom_field.id if ["list", "dependent_list"].include?(custom_field.field_format)
 			end
+			
+			tracker_log.info("======> custom_fields required data :  #{custom_fields_with_ids} <=========")
 			
 			data = []
 			csv.each_with_index do |row,index|
