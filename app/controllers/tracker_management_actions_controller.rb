@@ -74,7 +74,7 @@ class TrackerManagementActionsController < ApplicationController
 				unless custom_field.nil?
 					custom_fields_with_ids[name] = {} 
 					custom_fields_with_ids[name]['id'] = custom_field.id 
-					custom_fields_with_ids[name]['default_options'] = custom_field.id if ["list", "dependent_list"].include?(custom_field.field_format)
+					custom_fields_with_ids[name]['default_options'] = custom_field.possible_values if ["list", "dependent_list"].include?(custom_field.field_format)
 				end
 			end
 			
