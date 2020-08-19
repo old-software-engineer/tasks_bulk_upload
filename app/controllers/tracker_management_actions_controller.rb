@@ -130,8 +130,14 @@ class TrackerManagementActionsController < ApplicationController
 							tracker_log.info("======> csv field vales:  #{row[key.downcase.strip]} <=========")
 
 							tracker_log.info("======> custom field default_options:  #{value["default_options"] if value['default_options'].present?} <=========")
+							if value["default_options"].present?
+								tracker_log.info("======> inside if condition value:  #{value["default_options"].detect{|a| a.downcase.strip == row[key.downcase.strip] }} <=========")
+								new_input_value = value["default_options"].detect{|a| a.downcase.strip == row[key.downcase.strip] }
+								tracker_log.info("======> inside if custom value:  #{new_input_value} <=========")
+							else
+								new_input_value = row[key.downcase.strip]
+							end
 
-							new_input_value = value["default_options"].present? ?  (value["default_options"].detect{|a| a.downcase.strip == row[key.downcase.strip] }) : row[key.downcase.strip]
 
 							tracker_log.info("======> custom value:  #{new_input_value} <=========")
 							unless new_input_value.blank?
