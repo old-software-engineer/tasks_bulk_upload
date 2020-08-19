@@ -67,10 +67,13 @@ class TrackerManagementActionsController < ApplicationController
 				return
 			end
 			custom_fields_with_ids = {}
+			
 			custom_field_names.each do |name|
 				custom_field = IssueCustomField.find_by_id(name) || IssueCustomField.find_by_name(name)
-				custom_fields_with_ids[name] = custom_field.id unless custom_field.nil?
+				custom_fields_with_ids[name]['id'] = custom_field.id unless custom_field.nil?
+				custom_fields_with_ids[name]['default_options'] = custom_field.id if ["list", "dependent_list"].include?(custom_field.field_format)
 			end
+			
 			data = []
 			csv.each_with_index do |row,index|
 				new_data = {}
@@ -115,7 +118,12 @@ class TrackerManagementActionsController < ApplicationController
 						new_data['watcher_user_ids'] = watchers.map(&:id) if watchers.present?
 						new_data["custom_field_values"]= {}
 						custom_fields_with_ids.each do |key,value|
-							new_data["custom_field_values"][value.to_s] = row[key.downcase.strip] unless row[key.downcase.strip].blank?
+							input_value = value['default_options'].present? ?  value['default_options'].detect{|a| a.downcase.strip == row[key.downcase.strip] } : row[key.downcase.strip]
+							unless input_value.blank?
+								new_data["custom_field_values"][value['id'].to_s] = input_value
+							else
+								@errors[:message].push("\#Row #{index + 2 } #{key} field value doesn't exist in database") 
+							end
 						end
 
 						data.push(new_data)
