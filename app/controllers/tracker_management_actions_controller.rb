@@ -124,18 +124,19 @@ class TrackerManagementActionsController < ApplicationController
 						new_data['watcher_user_ids'] = watchers.map(&:id) if watchers.present?
 						new_data["custom_field_values"]= {}
 						custom_fields_with_ids.each do |key,value|
+							if row[key.downcase.strip].present?
+								tracker_log.info("======> custom field vales:  #{value} <=========")
 
-							tracker_log.info("======> custom field vales:  #{value} <=========")
-							
-							tracker_log.info("======> csv field vales:  #{row[key.downcase.strip]} <=========")
+								tracker_log.info("======> csv field vales:  #{row[key.downcase.strip]} <=========")
 
-							tracker_log.info("======> custom field default_options:  #{value["default_options"] if value['default_options'].present?} <=========")
+								tracker_log.info("======> custom field default_options:  #{value["default_options"] if value['default_options'].present?} <=========")
 
-							new_input_value = value["default_options"].present? ?  value["default_options"].detect{|a| a.downcase.strip == row[key.downcase.strip].downcase.strip } : row[key.downcase.strip]
+								new_input_value = value["default_options"].present? ?  value["default_options"].detect{|a| a.downcase.strip == row[key.downcase.strip].downcase.strip } : row[key.downcase.strip]
 
-							tracker_log.info("======> custom value:  #{new_input_value} <=========")
-							unless new_input_value.blank?
-								new_data["custom_field_values"][value['id'].to_s] = new_input_value
+								tracker_log.info("======> custom value:  #{new_input_value} <=========")
+								unless new_input_value.blank?
+									new_data["custom_field_values"][value['id'].to_s] = new_input_value
+								end
 							end
 						end
 
