@@ -153,32 +153,32 @@ class TrackerManagementActionsController < ApplicationController
 			if @errors[:message].blank? && @errors[:column_missing].blank? && @errors[:data_missing].blank?
 				begin
 					tracker_log.info("======> data to create:  #{data} <=========")
-					# @issues = Issue.create!(data)
+					@issues = Issue.create!(data)
 
-					sqs = Aws::SQS::Client.new(region: 'us-east-1')
+					# sqs = Aws::SQS::Client.new(region: 'us-east-1')
 
 					# Send a message to a queue.
-					queue_name = "tracker_tasks"
+					# queue_name = "Tracker_tasks"
 
-					begin
-						tracker_log.info("======> Queue Name:  #{queue_name} <=========")
-					  queue_url = sqs.get_queue_url(queue_name: queue_name).queue_url
+					# begin
+					# 	tracker_log.info("======> Queue Name:  #{queue_name} <=========")
+					#   queue_url = sqs.get_queue_url(queue_name: queue_name).queue_url
 
-						tracker_log.info("======> Queue URl:  #{queue_url} <=========")
+					# 	tracker_log.info("======> Queue URl:  #{queue_url} <=========")
 
-					  # Create a message with three custom attributes: Title, Author, and WeeksOn.
-					  send_message_result = sqs.send_message({
-					    queue_url: queue_url, 
-					    message_body: "Adding tasks to the tracker.",
-					    message_attributes: data.to_json
-					  })
-						tracker_log.info("======> Send Message Result:  #{send_message_result} <=========")
-					rescue Aws::SQS::Errors::NonExistentQueue
-						tracker_log.info("======> SDK Queue Error: A queue named #{queue_name} does not exist. <=========")
-					  puts 
-					  exit(false)
-					end
-						tracker_log.info("======> Message ID #{send_message_result.message_id} <=========")
+					#   # Create a message with three custom attributes: Title, Author, and WeeksOn.
+					#   send_message_result = sqs.send_message({
+					#     queue_url: queue_url, 
+					#     message_body: "Adding tasks to the tracker.",
+					#     message_attributes: data.to_json
+					#   })
+					# 	tracker_log.info("======> Send Message Result:  #{send_message_result} <=========")
+					# rescue Aws::SQS::Errors::NonExistentQueue
+					# 	tracker_log.info("======> SDK Queue Error: A queue named #{queue_name} does not exist. <=========")
+					#   puts 
+					#   exit(false)
+					# end
+					# 	tracker_log.info("======> Message ID #{send_message_result.message_id} <=========")
 
 					# puts send_message_result.message_id
 
