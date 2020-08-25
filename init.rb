@@ -7,7 +7,9 @@ Redmine::Plugin.register :tracker_management do
   author_url 'http://example.com/about'
 
   	class TrackerManagementHookListener < Redmine::Hook::ViewListener
-	 	render_on :tracker_management_action_option, :partial => "common_section/tracker_action_option" 
+	 	# render_on :tracker_management_action_option, :partial => "common_section/tracker_action_option" 
+	 	render_on :view_issue_sidebar_issue_buttons, :partial => "common_section/tracker_action_option" 
+		render_on :view_issue_sidebar_top,:partial => "common_section/tracker_action_button"
 	end
 
 end
