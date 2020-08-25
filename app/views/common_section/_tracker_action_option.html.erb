@@ -1,5 +1,7 @@
 <% if @issue.presence %>
-	<%= link_to 'Bulk Upload',tracker_actions_path(parent_id: @issue.id), :class=>"btn" %>
+	<%= link_to 'SysOps Bulk Upload',tracker_actions_path(parent_id: @issue.id), :class=>"btn" %>
+<% elsif @task.presence %>
+	<%= link_to 'SysOps Bulk Upload',tracker_actions_path(parent_id: @task.id), :class=>"btn" %>
 <% else %>
 	<%= link_to 'Bulk Upload',tracker_actions_path, :class=>"btn" %>
 <% end %>
