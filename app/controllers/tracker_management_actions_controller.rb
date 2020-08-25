@@ -1,6 +1,7 @@
 class TrackerManagementActionsController < ApplicationController
 	# before_action :check_user, only:[:show]
 	require 'csv'    
+	require 'aws-sdk-sqs'  # v2: require 'aws-sdk'
 
 	def index
 		@projects = Project.select(:id,:name)
@@ -152,7 +153,52 @@ class TrackerManagementActionsController < ApplicationController
 			if @errors[:message].blank? && @errors[:column_missing].blank? && @errors[:data_missing].blank?
 				begin
 					tracker_log.info("======> data to create:  #{data} <=========")
-					@issues = Issue.create!(data)
+					# @issues = Issue.create!(data)
+
+					sqs = Aws::SQS::Client.new(region: 'us-east-1')
+
+					# Send a message to a queue.
+					queue_name = "tracker_tasks"
+
+					begin
+						tracker_log.info("======> Queue Name:  #{queue_name} <=========")
+					  queue_url = sqs.get_queue_url(queue_name: queue_name).queue_url
+
+						tracker_log.info("======> Queue URl:  #{queue_url} <=========")
+
+					  # Create a message with three custom attributes: Title, Author, and WeeksOn.
+					  send_message_result = sqs.send_message({
+					    queue_url: queue_url, 
+					    message_body: "Adding tasks to the tracker.",
+					    message_attributes: data.to_json
+					  })
+						tracker_log.info("======> Send Message Result:  #{send_message_result} <=========")
+					rescue Aws::SQS::Errors::NonExistentQueue
+						tracker_log.info("======> SDK Queue Error: A queue named #{queue_name} does not exist. <=========")
+					  puts 
+					  exit(false)
+					end
+						tracker_log.info("======> Message ID #{send_message_result.message_id} <=========")
+
+					# puts send_message_result.message_id
+
+					# Receive the message in the queue.
+					# receive_message_result = sqs.receive_message({
+					#   queue_url: queue_url, 
+					#   message_attribute_names: ["All"], # Receive all custom attributes.
+					#   max_number_of_messages: 1, # Receive at most one message.
+					#   wait_time_seconds: 0 # Do not wait to check for the message.
+					# })
+
+					# Display information about the message.
+					# Display the message's body and each custom attribute value.
+					# receive_message_result.messages.each do |message|
+					#   puts message.body 
+					#   puts "Title: #{message.message_attributes["Title"]["string_value"]}"
+					#   puts "Author: #{message.message_attributes["Author"]["string_value"]}"
+					#   puts "WeeksOn: #{message.message_attributes["WeeksOn"]["string_value"]}"  
+	
+
 					redirect_to issue_path(@issues.first.id) unless @issues.nil?
 					# @issues.each_with_index do|a,i|
 					# 	@index = (i + 2)
