@@ -6,16 +6,16 @@
     <div class="row">
         <div class="col-main-section">
             <div class="row">
-                <div class="col-left-section">
+                <!-- <div class="col-left-section">
                     <ul>
-                        <!-- <li>
-                            <%#= link_to 'Define Action',tracker_action_path %>
-                        </li> -->
                         <li>
-                            <%= link_to 'Bulk Upload',tracker_actions_path %>
+                            <%#= link_to 'Define Action',tracker_action_path %>
+                        </li>
+                        <li>
+                            <%#= link_to 'Bulk Upload',tracker_actions_path %>
                         </li>
                     </ul>
-                </div>
+                </div> -->
                 <div class="col-right-section tracker-action-table">
                     <%if @errors.present? && @errors[:message].present? %>
                       <div id="errorExplanation"><ul>
@@ -24,9 +24,9 @@
                         <%end%>
                       </ul></div>
                     <%end%>
-                    <form class="tracker-action-form" action="<%= create_csvfile_tracker_path%>" method="POST" enctype="multipart/form-data">
+                    <form id="Bulk_Upload" class="tracker-action-form" action="<%= create_csvfile_tracker_path%>" method="POST" enctype="multipart/form-data">
                         <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token%>">
-                        <h2>Tracker Actions</h2>
+                        <h2>Bulk Upload</h2>
                         <!-- <label for="tracker_action_name">Action Name</label> -->
                         <label for="tracker_action_project"> Select Project</label>
                         <select id="tracker_action_project" name="tracker_action[project_id]" data-selected-option="<%=params[:tracker_action][:project_id] if params[:tracker_action].present? %>" data-type="project" required="true">
@@ -41,9 +41,9 @@
                             <option value="" disabled selected>Please select tracker</option>
                         </select>
                         </br>
-                        <label for="parent_tracker_task">Select Parent task</label>
-                        <input id="parent_tracker_task" data-type="parent-tracker-task">
-                        <input id="parent-task-value" type="hidden" name="tracker_action[parent_id]">
+                        <!-- <label for="parent_tracker_task">Select Parent task</label>
+                        <input id="parent_tracker_task" data-type="parent-tracker-task"> -->
+                        <input id="parent-task-value" type="hidden" name="tracker_action[parent_id]" value="<%= params[:parent_id] if params[:parent_id].present? %>">
                             
                         </br>
                         <label for="tracker_csv_file">Select Excel/Csv File</label>

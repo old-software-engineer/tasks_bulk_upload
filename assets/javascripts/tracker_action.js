@@ -57,37 +57,41 @@
         manual_ajax(url, data)
     })
 
-    $('[data-type="tracker"]').change(function() {
-        tracker_ids = $(this).val();
-        url = `/tracker/options/${"tracker_tasks"}`
-        data = { tracker_ids: tracker_ids }
-        manual_ajax(url, data)
-    })
+    // $('[data-type="tracker"]').change(function() {
+    //     tracker_ids = $(this).val();
+    //     url = `/tracker/options/${"tracker_tasks"}`
+    //     data = { tracker_ids: tracker_ids }
+    //     manual_ajax(url, data)
+    // })
 
-    $('[data-type="parent-tracker-task"]').focus(function(){
-      var availableTags = JSON.parse($('[data-type="parent-tracker-task"]').attr('data-options'))
-        $('[data-type="parent-tracker-task"]').autocomplete({
-          source: availableTags,
-          minLength: 0,
-           select: function( event, ui ) {
-              $( "#parent_tracker_task" ).val( ui.item.label );
-              $( "#parent-task-value" ).val( ui.item.value );
-              return false;
-            }
-        }).focus(function() {
-            $(this).autocomplete("search", $(this).val());
-        });
-    })
+    // $('[data-type="parent-tracker-task"]').focus(function(){
+    //   var availableTags = JSON.parse($('[data-type="parent-tracker-task"]').attr('data-options'))
+    //     $('[data-type="parent-tracker-task"]').autocomplete({
+    //       source: availableTags,
+    //       minLength: 0,
+    //        select: function( event, ui ) {
+    //           $( "#parent_tracker_task" ).val( ui.item.label );
+    //           $( "#parent-task-value" ).val( ui.item.value );
+    //           return false;
+    //         }
+    //     }).focus(function() {
+    //         $(this).autocomplete("search", $(this).val());
+    //     });
+    // })
 
 
-    $.each( $('.col-left-section ul li'),function(){
-      var link = $(this).children('a').attr('href')
-      if(link == document.location.pathname){
-        $(this).addClass('tracker-active');
-      }else{
-        $(this).removeClass('tracker-active');
-      }
+    // $.each( $('.col-left-section ul li'),function(){
+    //   var link = $(this).children('a').attr('href')
+    //   if(link == document.location.pathname){
+    //     $(this).addClass('tracker-active');
+    //   }else{
+    //     $(this).removeClass('tracker-active');
+    //   }
 
+    // })
+
+    $('#Bulk_Upload').submit(function(){
+        $('#ajax-indicator').show();
     })
 
   })

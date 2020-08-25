@@ -1,1 +1,5 @@
-<%= link_to 'Bulk Upload',tracker_actions_path, :class=>"icon icon-add new-issue" %>
+<% if @issue.presence %>
+	<%= link_to 'Bulk Upload',tracker_actions_path(parent_id: @issue.id), :class=>"btn" %>
+<% else %>
+	<%= link_to 'Bulk Upload',tracker_actions_path, :class=>"btn" %>
+<% end %>
