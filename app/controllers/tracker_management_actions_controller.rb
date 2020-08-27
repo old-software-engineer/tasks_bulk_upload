@@ -153,7 +153,7 @@ class TrackerManagementActionsController < ApplicationController
 			if @errors[:message].blank? && @errors[:column_missing].blank? && @errors[:data_missing].blank?
 				begin
 					tracker_log.info("======> data to create:  #{data} <=========")
-					@issues = Issue.create!(data)
+					@issues = Issue.create!(data)	
 
 					# sqs = Aws::SQS::Client.new(region: 'us-east-1')
 
